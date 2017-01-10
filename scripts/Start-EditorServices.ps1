@@ -47,12 +47,24 @@ param(
     [ValidateSet("Normal", "Verbose", "Error")]
     $LogLevel,
 
+	[Parameter(Mandatory=$true)]
+	[ValidateNotNullOrEmpty()]
+	[string]
+	$SessionDetailsPath,
+
+    [string]
+    $DebugServiceOnly,
+
     [switch]
     $WaitForDebugger,
 
     [switch]
     $ConfirmInstall
 )
+
+function WriteSessionFile($sessionInfo) {
+    ConvertTo-Json -InputObject $sessionInfo -Compress | Set-Content -Force -Path "$SessionDetailsPath" -ErrorAction Stop
+}
 
 # Are we running in PowerShell 2 or earlier?
 if ($PSVersionTable.PSVersion.Major -le 2) {
@@ -63,7 +75,9 @@ if ($PSVersionTable.PSVersion.Major -le 2) {
     };
 
     # Notify the client that the services have started
-    Write-Output (ConvertTo-Json -InputObject $resultDetails -Compress)
+    WriteSessionFile $resultDetails
+
+    Write-Host "Unsupported PowerShell version $($PSVersionTable.PSVersion), language features are disabled.`n"
 
     exit 0;
 }
@@ -192,6 +206,7 @@ $editorServicesHost =
         -LanguageServicePort $languageServicePort `
         -DebugServicePort $debugServicePort `
         -BundledModulesPath $BundledModulesPath `
+        -DebugServiceOnly:$DebugServiceOnly.IsPresent `
         -WaitForDebugger:$WaitForDebugger.IsPresent
 
 # TODO: Verify that the service is started
@@ -204,7 +219,7 @@ $resultDetails = @{
 };
 
 # Notify the client that the services have started
-Write-Output (ConvertTo-Json -InputObject $resultDetails -Compress)
+WriteSessionFile $resultDetails
 
 try {
     # Wait for the host to complete execution before exiting

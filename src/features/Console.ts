@@ -190,7 +190,6 @@ function onInputEntered(responseText: string): ShowInputPromptResponseBody {
 export class ConsoleFeature implements IFeature {
     private commands: vscode.Disposable[];
     private languageClient: LanguageClient;
-    private consoleChannel: vscode.OutputChannel;
 
     constructor() {
         this.commands = [
@@ -216,18 +215,8 @@ export class ConsoleFeature implements IFeature {
                 this.languageClient.sendRequest(EvaluateRequest.type, {
                     expression: editor.document.getText(selectionRange)
                 });
-
-                // Show the output window if it isn't already visible
-                this.consoleChannel.show(vscode.ViewColumn.Three);
-            }),
-
-            vscode.commands.registerCommand('PowerShell.ShowSessionOutput', () => {
-                // Show the output window if it isn't already visible
-                this.consoleChannel.show(vscode.ViewColumn.Three);
             })
         ];
-
-        this.consoleChannel = vscode.window.createOutputChannel("PowerShell Output");
     }
 
     public setLanguageClient(languageClient: LanguageClient) {
@@ -240,14 +229,9 @@ export class ConsoleFeature implements IFeature {
         this.languageClient.onRequest(
             ShowInputPromptRequest.type,
             promptDetails => showInputPrompt(promptDetails, this.languageClient));
-
-        this.languageClient.onNotification(OutputNotification.type, (output) => {
-            this.consoleChannel.append(output.output);
-        });
     }
 
     public dispose() {
         this.commands.forEach(command => command.dispose());
-        this.consoleChannel.dispose();
     }
 }
