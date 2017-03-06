@@ -136,7 +136,8 @@ export class SessionManager {
                 "-HostName 'Visual Studio Code Host' " +
                 "-HostProfileId 'Microsoft.VSCode' " +
                 "-HostVersion '" + this.hostVersion + "' " +
-                "-BundledModulesPath '" + bundledModulesPath + "' ";
+                "-BundledModulesPath '" + bundledModulesPath + "' " +
+                "-EnableConsoleRepl ";
 
             if (this.sessionSettings.developer.editorServicesWaitForDebugger) {
                 startArgs += '-WaitForDebugger ';

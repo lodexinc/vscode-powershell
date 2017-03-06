@@ -105,9 +105,9 @@ export function waitForSessionFile(callback: WaitForSessionFileCallback) {
         }
     }
 
-    // Since the delay is 500ms, 20 tries gives 10 seconds of time
+    // Since the delay is 500ms, 50 tries gives 25 seconds of time
     // for the session file to appear
-    innerTryFunc(20);
+    innerTryFunc(50);
 }
 
 export function readSessionFile(): EditorServicesSessionDetails {

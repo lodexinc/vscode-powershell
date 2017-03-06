@@ -52,6 +52,9 @@ param(
 	[string]
 	$SessionDetailsPath,
 
+    [switch]
+    $EnableConsoleRepl,
+
     [string]
     $DebugServiceOnly,
 
@@ -195,6 +198,8 @@ else {
 $languageServicePort = Get-AvailablePort
 $debugServicePort = Get-AvailablePort
 
+Write-Host "Starting PowerShell...`n" -ForegroundColor Blue
+
 # Create the Editor Services host
 $editorServicesHost =
     Start-EditorServicesHost `
@@ -206,6 +211,7 @@ $editorServicesHost =
         -LanguageServicePort $languageServicePort `
         -DebugServicePort $debugServicePort `
         -BundledModulesPath $BundledModulesPath `
+        -EnableConsoleRepl:$EnableConsoleRepl.IsPresent `
         -DebugServiceOnly:$DebugServiceOnly.IsPresent `
         -WaitForDebugger:$WaitForDebugger.IsPresent
 
